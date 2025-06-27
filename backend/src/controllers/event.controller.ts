@@ -31,8 +31,6 @@ export const addEvent = async (
       return next(errorHandler(404, "Venue not found"));
     }
 
-    
-
     const event = new Event({
       title,
       description,
@@ -94,6 +92,97 @@ export const approveEventByAdmin = async (
       success: true,
       message: "Event approved successfully",
       data: event,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+//not testing
+
+export const rejectEventByAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const { rejected }: { rejected: boolean } = req.body;
+    const event = await Event.findById(id);
+    if (!event) return next(errorHandler(404, "Event not found"));
+    event.rejected = rejected;
+    await event.save();
+    res.status(200).json({
+      success: true,
+      message: "Event rejected successfully",
+      data: event,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateEvent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const parsedData = eventValidationSchema.parse(req.body);
+    const {
+      title,
+      description,
+      category,
+      startDate,
+      endDate,
+      venue,
+      capacity,
+      image,
+    } = parsedData;
+    const event = await Event.findById(id);
+    if (!event) return next(errorHandler(404, "Event not found"));
+    const updatedEvent = await Event.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          title,
+          description,
+          category,
+          startDate,
+          endDate,
+          venue,
+          capacity,
+          image,
+        },
+      },
+      { new: true }
+    );
+    res.status(200).json({
+      success: true,
+      message: "Event updated successfully",
+      data: updatedEvent,
+    });
+  } catch (error) {
+    if (error instanceof ZodError) {
+      next(errorHandler(400, error));
+    }
+    next(error);
+  }
+};
+
+export const deleteEvent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const event = await Event.findById(id);
+    if (!event) return next(errorHandler(404, "Event not found"));
+    await Event.findByIdAndDelete(id);
+    res.status(200).json({
+      success: true,
+      message: "Event deleted successfully",
     });
   } catch (error) {
     next(error);

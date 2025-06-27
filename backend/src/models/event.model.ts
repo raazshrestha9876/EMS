@@ -11,6 +11,7 @@ export interface IEvent extends Document {
   capacity?: number;
   image?: string;
   approved?: boolean;
+  rejected?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -35,6 +36,7 @@ const eventSchema: Schema<IEvent> = new Schema(
     capacity: { type: Number },
     image: { type: String },
     approved: { type: Boolean, default: false },
+    rejected: { type: Boolean, default: false },
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

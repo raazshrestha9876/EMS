@@ -17,4 +17,5 @@ export const eventValidationSchema = z.object({
   capacity: z.number().int().nonnegative().optional(),
   image: z.string().url().optional(),
   approved: z.boolean().optional(),
+  rejected: z.boolean().optional(),
 });

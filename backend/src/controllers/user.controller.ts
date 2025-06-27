@@ -79,3 +79,28 @@ export const getUsers = async (
     next(error);
   }
 };
+
+export const deleteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = (req as AuthenticatedRequest)?.user;
+
+    const existingUser = await User.findById(user?.id);
+
+    if (!existingUser) return next(errorHandler(404, "User not found"));
+
+    await User.findByIdAndDelete(user?.id);
+
+    res.clearCookie("access_token");
+
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
