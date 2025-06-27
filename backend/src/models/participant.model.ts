@@ -1,5 +1,4 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
-import { z } from "zod";
 
 export interface IParticipant extends Document {
   event: mongoose.Types.ObjectId;

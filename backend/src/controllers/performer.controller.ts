@@ -81,8 +81,13 @@ export const getPerformersForEvent = async (
       );
     }
 
-    if(user?.role === "organizer" && event.organizer.toString() !== user.id){
-      return next(errorHandler(403, "You are not authorizied to view performer of this event"));
+    if (user?.role === "organizer" && event.organizer.toString() !== user.id) {
+      return next(
+        errorHandler(
+          403,
+          "You are not authorizied to view performer of this event"
+        )
+      );
     }
 
     const performers = await Performer.find({ event: eventId })

@@ -1,5 +1,4 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
-import { z } from "zod";
 
 export interface IVenue extends Document {
   name: string;

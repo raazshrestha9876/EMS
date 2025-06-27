@@ -1,19 +1,10 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
-import { z } from "zod";
-
-export const bookingValidationSchema = z.object({
-  user: z.string().min(1, "User is required"),
-  ticket: z.string().min(1, "Ticket is required"),
-  quantity: z.number().min(1, "Quantity is required"),
-  notes: z.string().optional(),
-});
 
 export interface IBooking extends Document {
   user: mongoose.Types.ObjectId;
   ticket: mongoose.Types.ObjectId;
   quantity: number;
-  paymentStatus: "confirmed" | "pending" | "cancelled";
-  notes?: string;
+  paymentStatus: "confirmed" | "cancelled";
   paymentMethod: "cash" | "khalti";
   createdAt: Date;
   updatedAt: Date;
@@ -37,11 +28,8 @@ const bookingSchema: Schema<IBooking> = new Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ["confirmed", "pending", "cancelled"],
-      default: "pending",
-    },
-    notes: {
-      type: String,
+      enum: ["confirmed", "cancelled"],
+      default: "confirmed",
     },
     paymentMethod: {
       type: String,

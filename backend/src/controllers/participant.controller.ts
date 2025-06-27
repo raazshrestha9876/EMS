@@ -99,7 +99,7 @@ export const addParticipant = async (
     } else if (type === "volunteer") {
       delete responseData.category;
     }
-
+    
     res.status(201).json({
       success: true,
       message: "Participant added successfully",

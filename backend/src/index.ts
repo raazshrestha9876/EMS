@@ -11,6 +11,9 @@ import eventRoute from "./routes/event.routes.js";
 import sessionRoute from "./routes/session.routes.js";
 import performerRoute from "./routes/performer.routes.js";
 import participantRoute from "./routes/participant.routes.js";
+import ticketRoute from "./routes/ticket.routes.js";
+import feedbackRoute from "./routes/feedback.routes.js";
+import bookingRoute from "./routes/booking.routes.js";
 
 dotenv.config();
 
@@ -31,6 +34,9 @@ app.use("/api/event", eventRoute);
 app.use("/api/session", sessionRoute);
 app.use("/api/performer", performerRoute);
 app.use("/api/participant", participantRoute);
+app.use("/api/ticket", ticketRoute);
+app.use("/api/feedback", feedbackRoute);
+app.use("/api/booking", bookingRoute);
 
 app.use(errorMiddleware);
 

@@ -1,5 +1,5 @@
 import mongoose, { Schema, Model, Document } from "mongoose";
-import { z } from "zod";
+
 export interface IPerformer extends Document {
   name: string;
   bio: string;
