@@ -4,6 +4,7 @@ import { errorHandler } from "../utils/errorHandler.js";
 import Event from "../models/event.model.js";
 import { eventValidationSchema } from "../validations/event.schema.js";
 import { AuthenticatedRequest } from "../types/authenticatedRequest.js";
+import Venue from "../models/venue.model.js";
 
 export const addEvent = async (
   req: Request,
@@ -24,6 +25,13 @@ export const addEvent = async (
     } = parsedData;
 
     const organizer = (req as AuthenticatedRequest).user?.id;
+
+    const existingVenue = await Venue.findById(venue);
+    if (!existingVenue) {
+      return next(errorHandler(404, "Venue not found"));
+    }
+
+    
 
     const event = new Event({
       title,

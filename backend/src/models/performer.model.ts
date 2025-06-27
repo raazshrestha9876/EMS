@@ -1,25 +1,13 @@
 import mongoose, { Schema, Model, Document } from "mongoose";
 import { z } from "zod";
-
-export const performerValidationSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  bio: z.string().min(1, "Bio is required"),
-  image: z.string().min(1, "Image is required"),
-  type: z.string().min(1, "Type is required"),
-  event: z.string().min(1, "Event ID is required"),
-  email: z.string().email("Invalid email"),
-  phone: z.string().min(1, "Phone is required"),
-  session: z.string().optional(),
-});
-
 export interface IPerformer extends Document {
   name: string;
   bio: string;
   image: string;
+  price: number;
   event: mongoose.Types.ObjectId;
   session?: mongoose.Types.ObjectId;
   type: string;
-  email?: string;
   phone: string;
   createdAt: Date;
   updatedAt: Date;
@@ -39,6 +27,10 @@ const performerSchema = new Schema(
       type: String,
       required: true,
     },
+    price: {
+      type: Number,
+      required: true,
+    },
     event: {
       type: Schema.Types.ObjectId,
       ref: "Event",
@@ -51,9 +43,6 @@ const performerSchema = new Schema(
     type: {
       type: String,
       required: true,
-    },
-    email: {
-      type: String,
     },
     phone: {
       type: String,

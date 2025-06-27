@@ -3,6 +3,7 @@ import { ZodError } from "zod";
 import { errorHandler } from "../utils/errorHandler.js";
 import { sessionValidationSchema } from "../validations/session.schema.js";
 import Session from "../models/session.model.js";
+import Event from "../models/event.model.js";
 
 export const addSessionForEvent = async (
   req: Request,
@@ -11,7 +12,13 @@ export const addSessionForEvent = async (
 ) => {
   try {
     const parsedData = sessionValidationSchema.parse(req.body);
-    const {event, title, description, startTime, endTime, venueRoom } = parsedData;
+    const { event, title, description, startTime, endTime, venueRoom } =
+      parsedData;
+
+    const existingEvent = await Event.findById(event);
+    if (!existingEvent) {
+      return next(errorHandler(404, "Event not found"));
+    }
 
     const session = new Session({
       event,
@@ -42,7 +49,7 @@ export const getSessionForEvent = async (
 ) => {
   try {
     const { eventId } = req.params;
-    const session = await Session.find({ event: eventId }).populate('event');
+    const session = await Session.find({ event: eventId }).populate("event");
     if (!session) {
       next(errorHandler(404, "Session not found"));
     }
