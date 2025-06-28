@@ -59,3 +59,63 @@ export const getTicketByEvent = async (
     next(error);
   }
 };
+
+export const updateTicket = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const parsedData = ticketValidationSchema.parse(req.body);
+    const { event, ticketType, maxTicket, price } = parsedData;
+
+    const ticket = await Ticket.findById(id);
+    if (!ticket) {
+      return next(errorHandler(404, "Ticket not found"));
+    }
+    const updatedTicket = await Ticket.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          event,
+          ticketType,
+          maxTicket,
+          price,
+        },
+      },
+      { new: true }
+    );
+    res.status(200).json({
+      success: true,
+      message: "Ticket updated successfully",
+      data: updatedTicket,
+    });
+  } catch (error) {
+    if (error instanceof ZodError) {
+      next(errorHandler(400, error));
+    }
+    next(error);
+  }
+};
+
+export const deleteTicket = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const ticket = await Ticket.findById(id);
+    if (!ticket) {
+      return next(errorHandler(404, "Ticket not found"));
+    }
+    await Ticket.findByIdAndDelete(id);
+    res.status(200).json({
+      success: true,
+      message: "Ticket deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};

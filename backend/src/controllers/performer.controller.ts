@@ -101,3 +101,66 @@ export const getPerformersForEvent = async (
     next(error);
   }
 };
+
+export const updatePerformer = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const parsedData = performerValidationSchema.parse(req.body);
+    const { name, bio, image, price, event, session, type, phone } = parsedData;
+    const performer = await Performer.findById(id);
+    if (!performer) {
+      return next(errorHandler(404, "Performer not found"));
+    }
+    const updatedPerformer = await Performer.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          name,
+          bio,
+          image,
+          price,
+          event,
+          session,
+          type,
+          phone,
+        },
+      },
+      { new: true }
+    );
+    res.status(200).json({
+      success: true,
+      message: "Performer updated successfully",
+      data: updatedPerformer,
+    });
+  } catch (error) {
+    if (error instanceof ZodError) {
+      next(errorHandler(400, error));
+    }
+    next(error);
+  }
+};
+
+export const deletePerformer = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const performer = await Performer.findById(id);
+    if (!performer) {
+      return next(errorHandler(404, "Performer not found"));
+    }
+    await Performer.findByIdAndDelete(id);
+    res.status(200).json({
+      success: true,
+      message: "Performer deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};

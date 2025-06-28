@@ -99,7 +99,7 @@ export const addParticipant = async (
     } else if (type === "volunteer") {
       delete responseData.category;
     }
-    
+
     res.status(201).json({
       success: true,
       message: "Participant added successfully",
@@ -134,11 +134,18 @@ export const getParticipantForEvent = async (
     let participants;
 
     if (user?.role === "admin") {
-      participants = await Participant.find({ event: eventId }).populate("event");
+      participants = await Participant.find({ event: eventId }).populate(
+        "event"
+      );
     } else if (user?.role === "organizer") {
-      participants = await Participant.find({ event: eventId }).populate("event");
+      participants = await Participant.find({ event: eventId }).populate(
+        "event"
+      );
     } else if (user?.role === "attendee") {
-      participants = await Participant.find({ event: eventId, user: user.id }).populate("event");
+      participants = await Participant.find({
+        event: eventId,
+        user: user.id,
+      }).populate("event");
     }
 
     res.status(200).json({
@@ -149,6 +156,82 @@ export const getParticipantForEvent = async (
     if (error instanceof ZodError) {
       return next(errorHandler(400, error));
     }
+    next(error);
+  }
+};
+
+export const updateParticipant = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const parsedData = participantValidationSchema.parse(req.body);
+    const {
+      event,
+      user, // optional
+      type,
+      name,
+      phone,
+      address,
+      category,
+      role,
+      approved,
+      assigned,
+    } = parsedData;
+    const { id } = req.params;
+    const participant = await Participant.findById(id);
+    if (!participant) {
+      return next(errorHandler(404, "Participant not found"));
+    }
+    const updatedParticipant = await Participant.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          event,
+          user,
+          type,
+          name,
+          phone,
+          address,
+          category,
+          role,
+          approved,
+          assigned,
+        },
+      },
+      { new: true }
+    );
+    res.status(200).json({
+      success: true,
+      message: "Participant updated successfully",
+      data: updatedParticipant,
+    });
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return next(errorHandler(400, error));
+    }
+    next(error);
+  }
+};
+
+export const deleteParticipant = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const participant = await Participant.findById(id);
+    if (!participant) {
+      return next(errorHandler(404, "Participant not found"));
+    }
+    await Participant.findByIdAndDelete(id);
+    res.status(200).json({
+      success: true,
+      message: "Participant deleted successfully",
+    });
+  } catch (error) {
     next(error);
   }
 };
